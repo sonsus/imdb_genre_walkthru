@@ -1,0 +1,10 @@
+>>> f= open("script_list.txt", "r")
+>>> len(f.readlines())
+199
+>>> f1= open("split_list.txt", "r")
+>>> len(f1.readlines())
+408
+>>> f2= open("plot_list.txt", "r")
+>>> len(f2.readlines())
+408
+>>> 
