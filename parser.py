@@ -1,6 +1,8 @@
 import requests 
 #from pathlib import Path
+import unicodedata
 from bs4 import BeautifulSoup
+
 
 #pwd = Path("/home/seonils/data_storage/story/")
 #datadir_json = pwd / "json" 
