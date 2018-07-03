@@ -1,46 +1,53 @@
 import requests 
-import json
-from pathlib import Path
+#from pathlib import Path
 from bs4 import BeautifulSoup
 
-pwd = Path("/home/seonils/data_storage/story/")
-# child folder path (Path obj)
-datadir_json = pwd / "json" 
-
-req = requests.get("https://www.imdb.com/title/tt0074285/")
-html = req.text
-
+#pwd = Path("/home/seonils/data_storage/story/")
+#datadir_json = pwd / "json" 
 #header = req.headers
 #status = req.status_code
 #is_ok = req.ok
 
-soup = BeautifulSoup(html, "html.parser")
+def refine(entity):
+    if entity == "genre_list":
+        genre_list = eval(entity)
+        for i, genre in enumerate(genre_list):
+            try: genre_list[i] = genre.contents[0].contents[0]
+            except: genre_list = genre_list[:-1]
+        return genre_list
+    elif entity == "runningtime":
+        runningtime = eval(entity)
+        runningtime = int(runningtime[0].attrs['datetime'][2:-1])
+        return runningtime
+    else: # for entity == year or title
+        res = eval(entity)[0].contents[0]
+        return res if entity=="year" else unicodedata.normalize("NFKD", res) 
 
-title = soup.select(
-    ".title_wrapper > h1:nth-child(1)", # CSSselector
+
+
+def title_yr_genre_runtime(moviekey):
+    req = requests.get("https://www.imdb.com/title/{moviekey}/".format(moviekey=moviekey))
+    html = req.text
+    soup = BeautifulSoup(html, "html.parser")
+
+    title = soup.select(
+        "#title-overview-widget > div.vital > div.title_block > div > div.titleBar > div.title_wrapper > h1", # CSSselector
+        )
+    year = soup.select(
+        "#titleYear > a",
+        )
+    genre_list = soup.select(
+        "#title-overview-widget > div.vital > div.title_block > div > div.titleBar > div.title_wrapper > div.subtext > a",
+        )
+    runningtime = soup.select(
+        "#title-overview-widget > div.vital > div.title_block > div > div.titleBar > div.title_wrapper > div > time",
     )
-year = soup.select(
-    "#titleYear > a:nth-child(1)",
-    )
 
+    result_dict = {}
 
-print("title")
-print(title.text)
-print(title.get("href"))
-print("--------------")
+    for entity in ["title", "year", "genre_list", "runningtime"]:
+        result_dict[entity] = refine(eval(entity))
 
-print("year")
-print(year.text)
-print(year.get("href"))
-print("------------------")
-
-if not (datadir_json.is_dir()): datadir_json.mkdir() 
-
-data = {}
-data[title.text] = title.get("href")
-data[year.text] = year.get("href")
-
-with open(datadir_json / "test.json", "w+") as json_file:
-    json.dump(data1, json_file)
-    json.dump(data2, json_file)
+    return result_dict # {"title": ____, "year":____, "genre_list": [__, __, __, __, ..], "runningtime": ___(int in min)}
+        
     
