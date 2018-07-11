@@ -1,15 +1,17 @@
 import requests 
-#from pathlib import Path
 import unicodedata
 from bs4 import BeautifulSoup
-from IPython.core.debugger import set_trace
+import clip_length as cl
+from pathlib import Path
+#from IPython.core.debugger import set_trace
 
 
 
 class MovieInfo:
     def __init__(self, moviekey):
         #set_trace()
-        self.moviekey= moviekey
+        self.vidpath = Path("/home/seonils/data_storage/story/video_clips/").resolve()
+        self.moviekey = moviekey
         self.req = requests.get("https://www.imdb.com/title/{moviekey}/".format(moviekey=self.moviekey))
         self.html = self.req.text
         self.soup = BeautifulSoup(self.html, "html.parser")
@@ -44,10 +46,20 @@ class MovieInfo:
     def key_title_yr_genre_runtime(self):
         result_dict = {}
         result_dict["key"] = self.moviekey
+        
+        
         for entity in ["title", "year", "genre_list", "running_time"]:
             result_dict[entity] = self.refine(entity)
+        
+        clips_list = list(self.vidpath.glob("{moviekey}/*mp4".format(moviekey = self.moviekey))) #generator has no __length__() method
+        #if self.moviekey == "tt0074285": 
+        #    set_trace()
+        result_dict["num_clips"] = len(clips_list)
+        result_dict["clip_duration"] = [cl.duration(str(clip_path)) for clip_path in clips_list]
         return result_dict 
     
-    # {"key": self.moviekey, "title": ____, "year":____, "genre_list": [__, __, __, __, ..], "runningtime": ___(int in min)}
+    # {"key": self.moviekey, "title": ____, "year":____, "genre_list": [__, __, __, __, ..], "runningtime": ___(int in min), num_clips: ___, clip_duration: [___, ___, ___, ... (in secs)] }
 
 
+#SSL error?
+#tt1182345

@@ -1,0 +1,5 @@
+# ffmpeg profiling the video (duration also included)
+ffmpeg -i FILENAME
+
+#frame per second regular expression filtering
+ffmpeg -i tt1568346.sf-217393.ef-219183.video.mp4  2>&1 | sed -n "s/.*, \(.*\) fp.*/\1/p"
