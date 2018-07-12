@@ -1,6 +1,7 @@
 import json 
 import pandas as pd
 import numpy as np
+import matplotlib.pyplot as plt
 from IPython.core.debugger import set_trace
 
 class Datacube:
@@ -99,3 +100,11 @@ class Datacube:
         for mv_key in self.imdb_data.keys():
             self.update_datacube(mv_key)
         return self.df_dict()
+
+    def show(self, df_dict, entity, genre_band, stacked=False): # genre_band is 0,1,2,3 : 1 shows 0~4 genre, 2shows 5~9 genre, so on to whole 19 genre
+        #plt.figure()
+        column_selector = self.genre_list[5*(genre_band) :5*(genre_band+1)]
+        df_dict[entity][:][column_selector].plot.bar(stacked = stacked)
+        plt.title("{e} _ genre: {s_}~{s}/20".format(e=entity, s_=str(5*(genre_band)+1), s=str(5*(genre_band+1))) )
+        #print(df_dict[entity][:][column_selector])
+    
