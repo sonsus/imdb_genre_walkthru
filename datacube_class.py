@@ -5,8 +5,8 @@ import matplotlib.pyplot as plt
 from IPython.core.debugger import set_trace
 
 class Datacube:
-
-    def __init__(self, imdb_dict=None, qa_list=None, ds_split_dict=None, clip_exist_list=None, ):
+    def __init__(self, imdb_dict, qa_list, ds_split_dict, clip_exist_list ):
+        super().__init__()
         # imdb_dict.keys() = ['data', 'genre_dictionary']
 
         # jsons into dicts
@@ -101,10 +101,11 @@ class Datacube:
             self.update_datacube(mv_key)
         return self.df_dict()
 
+    #need redesign
     def show(self, df_dict, entity, genre_band, stacked=False): # genre_band is 0,1,2,3 : 1 shows 0~4 genre, 2shows 5~9 genre, so on to whole 19 genre
         #plt.figure()
-        column_selector = self.genre_list[5*(genre_band) :5*(genre_band+1)]
+        column_selector = self.genre_list[10*(genre_band) :10*(genre_band+1)]
         df_dict[entity][:][column_selector].plot.bar(stacked = stacked)
-        plt.title("{e} _ genre: {s_}~{s}/20".format(e=entity, s_=str(5*(genre_band)+1), s=str(5*(genre_band+1))) )
+        plt.title("{e} _ genre: {s_}~{s}/20".format(e=entity, s_=str(10*(genre_band)+1), s=str(10*(genre_band+1))) )
         #print(df_dict[entity][:][column_selector])
     
